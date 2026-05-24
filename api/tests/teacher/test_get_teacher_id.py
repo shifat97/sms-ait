@@ -1,6 +1,6 @@
 from faker import Faker
 
-from api.teachers_api import get_teacher_id
+from api.teacher.teacher_api import get_teacher_id
 
 faker = Faker()
 

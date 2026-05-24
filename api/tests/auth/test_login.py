@@ -1,5 +1,5 @@
 import requests
-from api.teachers_api import login
+from api.auth.auth_api import login
 
 
 # Positive tests

@@ -1,4 +1,4 @@
-from api.teachers_api import get_teacher
+from api.teacher.teacher_api import get_teacher
 
 
 class TestGetTeachers:

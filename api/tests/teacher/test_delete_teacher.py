@@ -1,6 +1,6 @@
 import random
 
-from api.teachers_api import delete_teacher_id, get_teacher
+from api.teacher.teacher_api import delete_teacher_id, get_teacher
 
 
 class TestDeleteTeacher:

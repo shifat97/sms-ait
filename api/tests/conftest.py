@@ -6,7 +6,8 @@ import requests
 from dotenv import load_dotenv
 from faker import Faker
 
-from api.teachers_api import create_teacher, delete_teacher_id
+from api.teacher.teacher_api import create_teacher, delete_teacher_id
+from api.student.student_api import create_student, delete_student_id
 
 load_dotenv()
 faker = Faker()
@@ -54,6 +55,8 @@ def auth_header_with_invalid_token():
         "Authorization": f"Bearer {os.getenv('TEST_INVALID_TOKEN')}"
     }
 
+
+# ==================== Teacher Fixtures ====================
 
 @pytest.fixture
 def teacher_payload():
@@ -142,3 +145,92 @@ def created_teacher(base_url, auth_header, teacher_payload):
     yield response.json()
 
     delete_teacher_id(base_url, auth_header, response.json().get("teacherId"))
+
+
+# ==================== Student Fixtures ====================
+
+@pytest.fixture
+def student_payload():
+    valid_department_list = ["CSE", "BBA", "MBA", "LAW", "PHARMACY", "ENGLISH"]
+    random_department = random.choice(valid_department_list)
+
+    return {
+        "valid_payload": {
+            "name": faker.first_name() + " " + faker.last_name(),
+            "email": faker.first_name()+faker.email(),
+            "department": random_department,
+            "registrationId": faker.unique.random_number(digits=6)+faker.unique.random_number(digits=4),
+            "age": random.randint(18, 30)
+        },
+        "payload_without_name": {
+            "email": faker.first_name()+faker.email(),
+            "department": random_department,
+            "registrationId": faker.unique.random_number(digits=6)+faker.unique.random_number(digits=4),
+            "age": random.randint(18, 30)
+        },
+        "payload_without_email": {
+            "name": faker.first_name() + " " + faker.last_name(),
+            "department": random_department,
+            "registrationId": faker.unique.random_number(digits=6)+faker.unique.random_number(digits=4),
+            "age": random.randint(18, 30)
+        },
+        "payload_without_department": {
+            "name": faker.first_name() + " " + faker.last_name(),
+            "email": faker.first_name()+faker.email(),
+            "registrationId": faker.unique.random_number(digits=6)+faker.unique.random_number(digits=4),
+            "age": random.randint(18, 30)
+        },
+        "payload_without_registration_id": {
+            "name": faker.first_name() + " " + faker.last_name(),
+            "email": faker.first_name()+faker.email(),
+            "department": random_department,
+            "age": random.randint(18, 30)
+        },
+        "payload_without_age": {
+            "name": faker.first_name() + " " + faker.last_name(),
+            "email": faker.first_name()+faker.email(),
+            "department": random_department,
+            "registrationId": faker.unique.random_number(digits=6)+faker.unique.random_number(digits=4)
+        },
+        "payload_with_invalid_department": {
+            "name": faker.first_name() + " " + faker.last_name(),
+            "email": faker.first_name()+faker.email(),
+            "department": "SWE",
+            "registrationId": faker.unique.random_number(digits=6)+faker.unique.random_number(digits=4),
+            "age": random.randint(18, 30)
+        },
+        "payload_with_invalid_email": {
+            "name": faker.first_name() + " " + faker.last_name(),
+            "email": "johndoe#google.com",
+            "department": "SWE",
+            "registrationId": faker.unique.random_number(digits=6)+faker.unique.random_number(digits=4),
+            "age": random.randint(18, 30)
+        },
+    }
+
+
+@pytest.fixture
+def test_student_payload_structure():
+    structure = {
+        "_id": str,
+        "name": str,
+        "email": str,
+        "department": str,
+        "registrationId": int,
+        "age": int
+    }
+
+    return structure
+
+
+@pytest.fixture
+def created_student(base_url, auth_header, student_payload):
+    response = create_student(
+        base_url=base_url,
+        auth_header=auth_header,
+        payload=student_payload["valid_payload"]
+    )
+
+    yield response.json()
+
+    delete_student_id(base_url, auth_header, response.json().get("registrationId"))
