@@ -19,7 +19,7 @@ export const options = {
 
 export default function () {
     let authToke = ''
-    let createdStudentID = null;
+    let createdTeacherId = null;
 
     group('Login', function () {
         const payload = JSON.stringify({
@@ -37,19 +37,19 @@ export default function () {
         sleep(5)
     })
 
-    group('Create student', function () {
+    group('Create teacher', function () {
         const randomNumber = Math.floor(Math.random() * 10000);
         const payload = JSON.stringify(
             {
                 name: 'Test User' + randomNumber,
                 email: 'testemail' + randomNumber + '@yahoo.com',
                 department: 'CSE',
-                registrationId: randomNumber,
-                age: Math.floor(Math.random() * (70 - 18 + 1)) + 18
+                teacherId: randomNumber,
+                designation: 'Professor'
             }
         );
 
-        const response = http.post(`${BASE_URL}/api/student`, payload, {
+        const response = http.post(`${BASE_URL}/api/teacher`, payload, {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${authToke}`
@@ -57,9 +57,7 @@ export default function () {
 
         })
 
-        createdStudentID = response.json().registrationId
-        console.log('Random number: ', randomNumber)
-        console.log('Registration id after creation: ', createdStudentID)
+        createdTeacherId = response.json().teacherId
 
         check(response, {
             'Status code is 200 or 201': (r) => r.status === 200 || r.status === 201,
@@ -74,8 +72,8 @@ export default function () {
         sleep(5)
     });
 
-    group('Get students', function () {
-        const response = http.get(`${BASE_URL}/api/student`, {
+    group('Get teachers', function () {
+        const response = http.get(`${BASE_URL}/api/teacher`, {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${authToke}`
@@ -88,9 +86,8 @@ export default function () {
     });
 
 
-    group('Get student with ID', function () {
-        console.log(createdStudentID)
-        const response = http.get(`${BASE_URL}/api/student/${createdStudentID}`, {
+    group('Get teacher with ID', function () {
+        const response = http.get(`${BASE_URL}/api/teacher/${createdTeacherId}`, {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${authToke}`
@@ -104,15 +101,15 @@ export default function () {
     });
 
 
-    group('Update student', function () {
+    group('Update teacher', function () {
         const payload = JSON.stringify(
             {
-                name: 'Test User Update' + createdStudentID,
-                email: 'updatetestemail' + createdStudentID + '@yahoo.com',
+                name: 'Test User Update' + createdTeacherId,
+                email: 'updatetestemail' + createdTeacherId + '@yahoo.com',
             }
         );
 
-        const response = http.put(`${BASE_URL}/api/student/${createdStudentID}`, payload, {
+        const response = http.put(`${BASE_URL}/api/teacher/${createdTeacherId}`, payload, {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${authToke}`
@@ -125,16 +122,15 @@ export default function () {
         sleep(5)
     });
 
-    group('Delete student with ID', function () {
-        console.log(createdStudentID)
-        const response = http.del(`${BASE_URL}/api/student/${createdStudentID}`, null, {
+    group('Delete teacher with ID', function () {
+        const response = http.del(`${BASE_URL}/api/teacher/${createdTeacherId}`, null, {
             headers: {
                 ...headers,
                 'Authorization': `Bearer ${authToke}`
             }
 
         })
-        console.log(response)
+
         check(response, { 'Status code is 200 or 201': (r) => r.status === 200 || r.status === 201, });
 
         sleep(5)
